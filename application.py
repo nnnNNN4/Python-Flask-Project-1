@@ -94,13 +94,14 @@
 #     return "TEST"
 
 
-#ターミナルとprint文で、処理の流れを目視で確認しながらcookieの動作チェックをしました。
+#リダイレクトエラーチェック
 from flask import Flask, url_for, g
 from markupsafe import escape
 from flask import request
 from flask import render_template
 from flask import request, after_this_request
 from flask import make_response
+from flask import abort, redirect
 app = Flask(__name__)
 
 
@@ -124,10 +125,14 @@ def detect_user_name():
 
 @app.route('/')
 def index():
-    resp = make_response(render_template("index.html", testuser=request.cookies.get('testuser')))
-    return resp
+    return redirect(url_for('login'))
 
-@app.route('/test/')
-def test():
-    print("test")
-    return "TEST"
+@app.route('/login')
+def login():
+    abort(400)
+    this_is_never_executed()
+
+from werkzeug.exceptions import BadRequest
+@app.errorhandler(BadRequest)
+def handle_bad_request(e):
+    return 'bad request!!', 400
