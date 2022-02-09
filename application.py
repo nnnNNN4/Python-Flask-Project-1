@@ -111,16 +111,16 @@ app = Flask(__name__)
 def detect_user_name():
     #「u_name」変数をcookieから取得する
     print("before_request")
-    u_name = request.cookies.get('username')
+    u_name = request.cookies.get('testuser')
     print(u_name)
     #cookieに「u_name」変数がない場合
     if u_name is None:
         print("uname is none")
-        u_name = "test"
+        u_name = "testuser"
         @after_this_request
         def remember_uname(response):
             print("after_this_request")
-            response.set_cookie('username', u_name)
+            response.set_cookie('testuser', u_name)
             return response
 
     g.u_name = u_name
@@ -128,8 +128,8 @@ def detect_user_name():
 #indexページ
 @app.route('/')
 def index():
-    print("Index")
-    return "Index"
+    resp = make_response(render_template("index.html", testuser=request.cookies.get('testuser')))
+    return resp
 
 #テスト用にアクセスするためのURL
 @app.route('/test/')
