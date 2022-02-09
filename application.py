@@ -19,3 +19,17 @@ def login():
             	password=request.form['password'])
     #フォームに何も入力しなかった場合は元のページに戻る
     return render_template('login.html')
+
+from werkzeug.utils import secure_filename
+
+@app.route('/uploads', methods=['POST', 'GET'])
+def upload_file():
+    if request.method == 'POST':
+        f = request.files["the_file"]
+        #任意の階層をフルパスで指定
+        f.save('/Users/<任意のユーザー名>/python/myproject/uploads/' + secure_filename(f.filename))
+        #サーバーにファイルが保存されたらfinished.htmlと表示
+        return render_template('finished.html')
+    else:
+    	#GETでアクセスされた時、uploadsを表示
+    	return render_template('uploads.html')
