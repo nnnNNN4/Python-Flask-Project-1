@@ -93,6 +93,8 @@
 #     print("test")
 #     return "TEST"
 
+
+#ターミナルとprint文で、処理の流れを目視で確認しながらcookieの動作チェックをしました。
 from flask import Flask, url_for, g
 from markupsafe import escape
 from flask import request
