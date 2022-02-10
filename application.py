@@ -4,6 +4,7 @@
 # from flask import render_template
 # from flask import request, after_this_request
 # from flask import make_response
+# from flask import abort, redirect
 # app = Flask(__name__)
 
 # @app.route('/')
@@ -94,45 +95,25 @@
 #     return "TEST"
 
 
-#リダイレクトエラーチェック
-from flask import Flask, url_for, g
-from markupsafe import escape
-from flask import request
-from flask import render_template
-from flask import request, after_this_request
-from flask import make_response
-from flask import abort, redirect
+#動作テスト
+from flask import Flask, flash, redirect, render_template, request, url_for
+# from werkzeug.middleware.proxy_fix import ProxyFix
+# app.wsgi_app = ProxyFix(app.wsgi_app)
+
 app = Flask(__name__)
-
-
-@app.before_request
-def detect_user_name():
-    
-    print("before_request")
-    u_name = request.cookies.get('testuser')
-    print(u_name)
-    
-    if u_name is None:
-        print("uname is none")
-        u_name = "testuser"
-        @after_this_request
-        def remember_uname(response):
-            print("after_this_request")
-            response.set_cookie('testuser', u_name)
-            return response
-
-    g.u_name = u_name
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 @app.route('/')
 def index():
-    return redirect(url_for('login'))
+    return render_template('index.html')
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    abort(400)
-    this_is_never_executed()
-
-from werkzeug.exceptions import BadRequest
-@app.errorhandler(BadRequest)
-def handle_bad_request(e):
-    return 'bad request!!', 400
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] != 'admin' or request.form['password'] != 'secret':
+            error = 'Invalid credentials'
+        else:
+            flash('ログイン成功しました')
+            return redirect(url_for('index'))
+    return render_template('login.html', error=error)
